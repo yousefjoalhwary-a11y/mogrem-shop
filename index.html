@@ -6,8 +6,8 @@
 <title>Mogrem Shop</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:Segoe UI,Tahoma;}
-body{background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);color:#fff;min-height:100vh;display:flex;justify-content:center;align-items:flex-start;padding:10px;}
-body.tablet{font-size:18px;}
+body{background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);color:#fff;min-height:100vh;display:flex;justify-content:center;align-items:flex-start;padding:10px;transition:all 0.4s;}
+body.tablet .app{max-width:760px;}
 .app{width:100%;max-width:380px;background:#000c;border-radius:22px;padding:16px;min-height:95vh;display:none;flex-direction:column;justify-content:flex-start;transition:all 0.4s ease;overflow:auto;}
 .app.active{display:flex;opacity:1;transform:translateY(0);}
 h1,h2,h3,h4{text-align:center;margin:10px 0;}
@@ -21,108 +21,159 @@ textarea{resize:none;height:60px;}
 .topBtns{display:flex;gap:8px;justify-content:center;margin-bottom:20px;}
 .bigBtns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:10px;}
 .centerText{text-align:center;margin:20px 0;line-height:1.8;}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:6px;margin-bottom:10px;}
-.grid .cell{padding:8px;border:1px solid #555;border-radius:6px;background:#111;text-align:center;}
-.grid .rowBtn{display:flex;gap:4px;justify-content:center;}
 .section{border:1px solid #555;padding:10px;margin:10px 0;border-radius:10px;}
+.rowBtn{display:flex;gap:4px;justify-content:center;}
 </style>
 </head>
 <body>
 
 <!-- MAIN SCREEN -->
 <div class="app active" id="main">
-<div class="topBtns">
-<button onclick="setNormal()">📱 عادي</button>
-<button onclick="setTablet()">📲 تابلت</button>
-</div>
-<div class="centerText">
-<h1>MOGREM SHOP</h1>
-<p>Designer<br>Youssef Jo<br>📞 01128915630</p>
-<p>Admin<br>Mogrem – إدارة الشحن<br>📞 01153845611</p>
-</div>
-<div class="bigBtns">
-<button onclick="go('charge')">💳 الشحن</button>
-<button onclick="goAdmin()">🛠️ الإدارة</button>
-</div>
+  <div class="topBtns">
+    <button onclick="setNormal()">📱 عادي</button>
+    <button onclick="setTablet()">📲 تابلت</button>
+  </div>
+  <div class="centerText">
+    <h1>MOGREM SHOP</h1>
+    <p>Designer<br>Youssef Jo<br>📞 01128915630</p>
+    <p>Admin<br>Mogrem – إدارة الشحن<br>📞 01153845611</p>
+  </div>
+  <div class="bigBtns">
+    <button onclick="go('charge')">💳 الشحن</button>
+    <button onclick="goAdmin()">🛠️ الإدارة</button>
+  </div>
 </div>
 
 <!-- CHARGE SCREEN -->
 <div class="app" id="charge">
-<button class="back" onclick="go('main')">⬅ رجوع</button>
-<h2>شاشة الشحن</h2>
-<input id="cid" placeholder="ID اللاعب">
-<input id="cgame" placeholder="اسم اللعبة" readonly>
-<input id="ctable" placeholder="اسم الجدول" readonly>
-<input id="cpack" placeholder="اسم الباقة" readonly>
-<input id="cprice" placeholder="السعر" readonly>
-<select id="cpay">
-<option value="">طريقة الدفع</option>
-<option>فودافون كاش</option>
-<option>أمان</option>
-<option>محفظة</option>
-</select>
-<textarea id="cnotes" placeholder="ملاحظات"></textarea>
-<label><input type="checkbox" id="cconfirm"> أؤكد إرسال صورة الإثبات</label>
-<input type="file" id="cimg">
-<button class="success" onclick="sendOrder()">📤 إرسال الطلب</button>
-<button onclick="go('packages')">📦 اختيار باقة</button>
-<div id="userGrids"></div>
+  <button class="back" onclick="go('main')">⬅ رجوع</button>
+  <h2>شاشة الشحن</h2>
+  <select id="ctype" onchange="updateChargeFields()">
+    <option value="id">ID اللاعب</option>
+    <option value="account">Account</option>
+  </select>
+  <input id="cid" placeholder="ID اللاعب">
+  <input id="caccount" placeholder="الحساب" style="display:none;">
+  <input id="cpass" placeholder="كلمة السر" style="display:none;">
+  <input id="ctypeAccount" placeholder="نوع الحساب" style="display:none;">
+  <input id="cgame" placeholder="اسم اللعبة" readonly>
+  <input id="ctable" placeholder="اسم الجدول" readonly>
+  <input id="cpack" placeholder="اسم الباقة" readonly>
+  <input id="cprice" placeholder="السعر" readonly>
+  <select id="cpay">
+    <option value="">طريقة الدفع</option>
+    <option>فودافون كاش</option>
+    <option>أمان</option>
+    <option>محفظة</option>
+  </select>
+  <textarea id="cnotes" placeholder="ملاحظات"></textarea>
+  <label><input type="checkbox" id="cconfirm"> أؤكد إرسال صورة الإثبات</label>
+  <input type="file" id="cimg">
+  <button class="success" onclick="sendOrder()">📤 إرسال الطلب</button>
+  <button onclick="go('packages')">📦 اختيار باقة</button>
+  <div id="userGrids"></div>
 </div>
 
 <!-- PACKAGES SCREEN -->
 <div class="app" id="packages">
-<button class="back" onclick="go('charge')">⬅ رجوع</button>
-<h2>اختيار الباقات</h2>
-<select id="pgame" onchange="loadTablesUser()"></select>
-<select id="ptable" onchange="renderUserGrids()"></select>
-<div id="packsView"></div>
+  <button class="back" onclick="go('charge')">⬅ رجوع</button>
+  <h2>اختيار الباقات</h2>
+  <select id="pgame" onchange="loadTablesUser()"></select>
+  <select id="ptable" onchange="renderUserGrids()"></select>
+  <div id="packsView"></div>
 </div>
 
 <!-- ADMIN LOGIN -->
 <div class="app" id="adminLogin">
-<h2>دخول الإدارة</h2>
-<input type="password" id="apass" placeholder="كلمة السر">
-<button onclick="checkAdmin()">دخول</button>
-<button class="back" onclick="go('main')">رجوع</button>
+  <h2>دخول الإدارة</h2>
+  <input type="password" id="apass" placeholder="كلمة السر">
+  <button onclick="checkAdmin()">دخول</button>
+  <button class="back" onclick="go('main')">رجوع</button>
 </div>
 
 <!-- ADMIN PANEL -->
 <div class="app" id="admin">
-<button class="back" onclick="go('main')">⬅ رجوع</button>
-<h2>لوحة الإدارة</h2>
-<div class="bigBtns">
-<button onclick="showAdminSection('games')">🎮 تكويد الألعاب</button>
-<button onclick="showAdminSection('tables')">📂 تكويد الجداول</button>
-<button onclick="showAdminSection('packs')">📦 تكويد الباقات</button>
-<button class="danger" onclick="clearAll()">🗑️ مسح كل البيانات</button>
-</div>
-<div id="adminSection"></div>
+  <button class="back" onclick="go('main')">⬅ رجوع</button>
+  <h2>لوحة الإدارة</h2>
+  <div class="bigBtns">
+    <button onclick="showAdminSection('games')">🎮 تكويد الألعاب</button>
+    <button onclick="showAdminSection('tables')">📂 تكويد الجداول</button>
+    <button onclick="showAdminSection('packs')">📦 تكويد الباقات</button>
+    <button onclick="showAdminSection('history')">📜 سجل الشحنات</button>
+  </div>
+  <div id="adminSection"></div>
 </div>
 
 <script>
 const PASS="admin mogrem";
 let db=JSON.parse(localStorage.getItem("db"))||{};
+let history=JSON.parse(localStorage.getItem("history"))||[];
 
 function go(id){
   document.querySelectorAll(".app").forEach(a=>a.classList.remove("active"));
   document.getElementById(id).classList.add("active");
   if(id==='packages') populateGamesUser();
-  if(id==='charge') renderUserGrids();
 }
 function setTablet(){document.body.classList.add("tablet")}
 function setNormal(){document.body.classList.remove("tablet")}
 function goAdmin(){go('adminLogin')}
 function checkAdmin(){if(apass.value===PASS){apass.value="";go('admin');}else alert("كلمة السر خطأ");}
 
-// ---------- ADMIN ----------
+function updateChargeFields(){
+  let type=document.getElementById('ctype').value;
+  document.getElementById('cid').style.display = type==='id'?'block':'none';
+  document.getElementById('caccount').style.display = type==='account'?'block':'none';
+  document.getElementById('cpass').style.display = type==='account'?'block':'none';
+  document.getElementById('ctypeAccount').style.display = type==='account'?'block':'none';
+}
+
+function populateGamesUser(){
+  let pg=document.getElementById('pgame'); pg.innerHTML=''; for(let g in db){let opt=document.createElement('option'); opt.value=g; opt.textContent=g; pg.appendChild(opt);} loadTablesUser();
+}
+function loadTablesUser(){
+  let g=document.getElementById('pgame').value; let pt=document.getElementById('ptable'); pt.innerHTML=''; for(let t in db[g]){let opt=document.createElement('option'); opt.value=t; opt.textContent=t; pt.appendChild(opt);} renderUserGrids();
+}
+function renderUserGrids(){
+  let g=document.getElementById('pgame').value; let t=document.getElementById('ptable').value; let view=document.getElementById('packsView'); view.innerHTML=''; if(!g||!t) return; db[g][t].forEach(p=>{let btn=document.createElement('button'); btn.textContent=`${p.name} - ${p.price}`; btn.onclick=()=>{document.getElementById('cgame').value=g; document.getElementById('ctable').value=t; document.getElementById('cpack').value=p.name; document.getElementById('cprice').value=p.price; go('charge');}; view.appendChild(btn);});
+}
+
+function sendOrder(){
+  let type=document.getElementById('ctype').value;
+  let idVal=document.getElementById('cid').value;
+  let accountVal=document.getElementById('caccount').value;
+  let passVal=document.getElementById('cpass').value;
+  let typeAcc=document.getElementById('ctypeAccount').value;
+  if(type==='id' && !idVal){alert('أكمل بيانات ID'); return;}
+  if(type==='account' && (!accountVal || !passVal || !typeAcc)){alert('أكمل بيانات الحساب'); return;}
+  if(!cconfirm.checked){alert('أؤكد إرسال الصورة'); return;}
+  const phone="201153845611";
+  let msg= type==='id'?`ID: ${idVal}`:`Account: ${accountVal} | Password: ${passVal} | Type: ${typeAcc}`;
+  window.open(`https://wa.me/${phone}?text=${encodeURIComponent('طلب شحن جديد:\n'+msg)}`,"_blank");
+  history.push({type,id:idVal,account:accountVal,pass:passVal,typeAcc});
+  localStorage.setItem('history',JSON.stringify(history));
+  cid.value='';caccount.value='';cpass.value='';ctypeAccount.value='';cgame.value='';ctable.value='';cpack.value='';cprice.value='';cpay.value='';cnotes.value='';cconfirm.checked=false;cimg.value='';
+}
+
 function showAdminSection(section){
   let sec=document.getElementById("adminSection"); sec.innerHTML="";
+  if(section==='history'){ renderAdminHistory(); return; }
   if(section==='games') adminGames(sec);
   if(section==='tables') adminTables(sec);
   if(section==='packs') adminPacks(sec);
 }
 
-// GAMES
+// ----------------- ADMIN HISTORY -----------------
+function renderAdminHistory(){
+  let sec=document.getElementById("adminSection"); sec.innerHTML='';
+  if(history.length===0){sec.innerHTML='<p>لا توجد عمليات شحن بعد</p>'; return;}
+  history.forEach(h=>{
+    let d=document.createElement('div'); d.classList.add('section');
+    d.textContent= h.type==='id'?`ID: ${h.id}`:`Account: ${h.account} | Password: ${h.pass} | Type: ${h.typeAcc}`;
+    sec.appendChild(d);
+  });
+}
+
+// ----------------- ADMIN CODING -----------------
 function adminGames(container){
   for(let g in db){
     let div=document.createElement('div'); div.classList.add('section');
@@ -141,16 +192,11 @@ function adminTables(container){
   let gameSelect=document.createElement('select'); for(let g in db){let opt=document.createElement('option'); opt.value=g; opt.textContent=g; gameSelect.appendChild(opt);}
   container.appendChild(gameSelect);
   let tableInput=document.createElement('input'); tableInput.placeholder="اسم الجدول الجديد"; container.appendChild(tableInput);
-  let addBtn=document.createElement('button'); addBtn.textContent="➕ إضافة جدول"; addBtn.classList.add('success');
-  addBtn.onclick=()=>{let g=gameSelect.value; let t=tableInput.value; if(!t){alert('اكتب اسم الجدول'); return;} db[g][t]=[]; localStorage.setItem('db',JSON.stringify(db)); tableInput.value=''; renderTables();};
-  container.appendChild(addBtn);
+  let addBtn=document.createElement('button'); addBtn.textContent="➕ إضافة جدول"; addBtn.classList.add('success'); container.appendChild(addBtn);
   let grid=document.createElement('div'); container.appendChild(grid);
-  function renderTables(){ grid.innerHTML=''; let g=gameSelect.value; for(let t in db[g]){
-    let div=document.createElement('div'); div.classList.add('section');
-    div.innerHTML=`<b>${t}</b><div class='rowBtn'><button onclick="editTable('${g}','${t}')">✏️</button><button onclick="deleteTable('${g}','${t}')">🗑️</button></div>`;
-    grid.appendChild(div);
-  }}
+  function renderTables(){ grid.innerHTML=''; let g=gameSelect.value; for(let t in db[g]){ let div=document.createElement('div'); div.classList.add('section'); div.innerHTML=`<b>${t}</b><div class='rowBtn'><button onclick="editTable('${g}','${t}')">✏️</button><button onclick="deleteTable('${g}','${t}')">🗑️</button></div>`; grid.appendChild(div);} }
   gameSelect.onchange=renderTables; renderTables();
+  addBtn.onclick=()=>{let g=gameSelect.value; let t=tableInput.value; if(!t){alert('اكتب اسم الجدول'); return;} db[g][t]=[]; localStorage.setItem('db',JSON.stringify(db)); tableInput.value=''; renderTables();}
 }
 function editTable(g,t){let n=prompt("اسم الجدول",t); if(n){db[g][n]=db[g][t]; if(n!==t) delete db[g][t]; localStorage.setItem('db',JSON.stringify(db)); showAdminSection('tables');}}
 function deleteTable(g,t){if(confirm('سيتم حذف جميع الباقات في هذا الجدول؟')){delete db[g][t]; localStorage.setItem('db',JSON.stringify(db)); showAdminSection('tables');}}
@@ -164,32 +210,13 @@ function adminPacks(container){
   let priceInput=document.createElement('input'); priceInput.placeholder="السعر"; container.appendChild(priceInput);
   let addBtn=document.createElement('button'); addBtn.textContent="➕ إضافة باقة"; addBtn.classList.add('success'); container.appendChild(addBtn);
   let grid=document.createElement('div'); container.appendChild(grid);
+  function renderPacks(){ grid.innerHTML=''; let g=gameSelect.value; let t=tableSelect.value; db[g][t].forEach((p,i)=>{ let div=document.createElement('div'); div.classList.add('section'); div.innerHTML=`${p.name} - ${p.price}<div class='rowBtn'><button onclick="editPack('${g}','${t}',${i})">✏️</button><button onclick="deletePack('${g}','${t}',${i})">🗑️</button></div>`; grid.appendChild(div); });}
   gameSelect.onchange=()=>{ tableSelect.innerHTML=''; let g=gameSelect.value; for(let t in db[g]){ let opt=document.createElement('option'); opt.value=t; opt.textContent=t; tableSelect.appendChild(opt); } renderPacks();}
   tableSelect.onchange=renderPacks;
   addBtn.onclick=()=>{ let g=gameSelect.value; let t=tableSelect.value; let n=nameInput.value; let pr=priceInput.value; if(!n||!pr){alert('اكمل البيانات'); return;} db[g][t].push({name:n,price:pr}); localStorage.setItem('db',JSON.stringify(db)); nameInput.value=''; priceInput.value=''; renderPacks();}
-  function renderPacks(){ grid.innerHTML=''; let g=gameSelect.value; let t=tableSelect.value; db[g][t].forEach((p,i)=>{ let div=document.createElement('div'); div.classList.add('section'); div.innerHTML=`${p.name} - ${p.price}<div class='rowBtn'><button onclick="editPack('${g}','${t}',${i})">✏️</button><button onclick="deletePack('${g}','${t}',${i})">🗑️</button></div>`; grid.appendChild(div); });}
-  renderPacks();
 }
 function editPack(g,t,i){let n=prompt('اسم الباقة',db[g][t][i].name); let pr=prompt('السعر',db[g][t][i].price); if(n&&pr){db[g][t][i]={name:n,price:pr}; localStorage.setItem('db',JSON.stringify(db)); showAdminSection('packs');}}
 function deletePack(g,t,i){db[g][t].splice(i,1); localStorage.setItem('db',JSON.stringify(db)); showAdminSection('packs');}
-
-// CLEAR ALL
-function clearAll(){let pass=prompt('كلمة السر للتأكيد'); if(pass!==PASS){alert('كلمة السر خطأ'); return;} if(confirm('سيتم مسح جميع البيانات؟')){db={}; localStorage.setItem('db',JSON.stringify(db)); showAdminSection('games'); alert('تم المسح');}}
-
-// USER SCREEN
-function populateGamesUser(){let pg=document.getElementById('pgame'); pg.innerHTML=''; for(let g in db){let opt=document.createElement('option'); opt.value=g; opt.textContent=g; pg.appendChild(opt);} loadTablesUser();}
-function loadTablesUser(){let g=document.getElementById('pgame').value; let pt=document.getElementById('ptable'); pt.innerHTML=''; for(let t in db[g]){let opt=document.createElement('option'); opt.value=t; opt.textContent=t; pt.appendChild(opt);} renderUserGrids();}
-function renderUserGrids(){let g=document.getElementById('pgame').value; let t=document.getElementById('ptable').value; let view=document.getElementById('packsView'); view.innerHTML=''; if(!g||!t) return; db[g][t].forEach(p=>{let btn=document.createElement('button'); btn.textContent=`${p.name} - ${p.price}`; btn.onclick=()=>{document.getElementById('cgame').value=g; document.getElementById('ctable').value=t; document.getElementById('cpack').value=p.name; document.getElementById('cprice').value=p.price; go('charge');}; view.appendChild(btn);});}
-
-// SEND ORDER
-function sendOrder(){
-  if(!cid.value||!cconfirm.checked){alert('أكمل البيانات');return;}
-  const phone="201153845611"; // رقم الإدارة + كود مصر 20
-  const msg=`طلب شحن جديد:\nID: ${cid.value}\nاللعبة: ${cgame.value}\nالجدول: ${ctable.value}\nالباقة: ${cpack.value}\nالسعر: ${cprice.value}\nالدفع: ${cpay.value}\nملاحظات: ${cnotes.value}\n*يرجى رفع صورة الإثبات يدوياً*`;
-  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`,"_blank");
-  cid.value='';cgame.value='';ctable.value='';cpack.value='';cprice.value='';cpay.value='';cnotes.value='';cconfirm.checked=false;cimg.value='';
-}
-
 </script>
 </body>
 </html>
